@@ -2,8 +2,13 @@
     """
     Print trading signal in readable format.
     """
+    from utils.time_utils import get_current_session
+    
+    session = get_current_session()
+    session_emoji = "🇬🇧" if session == "london" else "🇺🇸"
+    
     print("\n" + "="*60)
-    print("🎯 TRADING SIGNAL GENERATED")
+    print(f"🎯 TRADING SIGNAL GENERATED ({session_emoji} {session.upper()} SESSION)")
     print("="*60)
     print(f"Signal: {signal['signal']}")
     print(f"Instrument: {signal['instrument']}")
