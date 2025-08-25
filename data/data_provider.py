@@ -3,6 +3,25 @@ import yfinance as yf
 import requests
 from config import settings
 
+
+def get_close_price_safe(data, symbol):
+    """
+    Safely extract close price handling both old and new yfinance structures
+    """
+    if data is None or data.empty:
+        return None
+    
+    try:
+        # New multi-index structure (current yfinance)
+        if isinstance(data.columns, pd.MultiIndex):
+            return data['Close'][symbol].iloc[-1]
+        else:
+            # Old flat structure (legacy yfinance)
+            return data['Close'].iloc[-1]
+    except Exception as e:
+        print(f"Error extracting close price for {symbol}: {e}")
+        return None
+
 def fetch_market_data(symbol, timeframe, num_bars):
     """
     Fetch market data from Yahoo Finance (free, no API key needed).
@@ -69,7 +88,7 @@ def get_current_price(symbol):
         data = ticker.history(period='1d', interval='1m')
         if data.empty:
             return None
-        return round(data['Close'].iloc[-1], 2)
+        return round(data['Close'][symbol].iloc[-1], 2)
     except Exception as e:
         print(f"Error getting current price: {e}")
         return None
